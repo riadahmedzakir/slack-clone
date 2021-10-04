@@ -3,3 +3,23 @@ html, body, .app {
     background: #8244FF;
     padding: 20px;
 }
+
+.messages {
+    height: 69vh;
+    max-width: 100% !important;
+    overflow-y: scroll;
+}
+
+.messages__form {
+    position: fixed !important;
+    margin-left: 320px !important;
+    left: 0;
+    bottom: 16px;
+    right: 16px;
+    z-index: 200;
+}
+
+.message__self {
+    border-left: 2px solid orange;
+    padding-left: 8px;
+}

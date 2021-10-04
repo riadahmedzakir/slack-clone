@@ -60,9 +60,4 @@ class UserPanel extends React.Component {
         )
     }
 }
-
-const matStatesToProbs = (state) => ({
-    currentUser: state.user.currentUser
-});
-
 export default UserPanel;
