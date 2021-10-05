@@ -48,12 +48,12 @@ class MessageForm extends React.Component {
     closeModal = () => this.setState({ modal: false });
 
     sendMessage = () => {
-        const { messagesRef } = this.props;
+        const { getMessagesRef } = this.props;
         const { message, channel } = this.state;
 
         if (message) {
             this.setState({ loading: true });
-            messagesRef.child(channel.id).push().set(this.createMessage()).then(() => {
+            getMessagesRef().child(channel.id).push().set(this.createMessage()).then(() => {
                 this.setState({ loading: false, message: '', error: [] });
             }).catch(err => {
                 this.setState({ loading: false, errors: this.state.errors.concat(err) });
@@ -63,10 +63,18 @@ class MessageForm extends React.Component {
         }
     }
 
+    getPath = () => {
+        if (this.props.isPrivateChannel) {
+            return `chat/private-${this.state.channel.id}`;
+        } else {
+            return `chat/public`;
+        }
+    }
+
     uploadFile = (file, metadata) => {
         const pathToUpload = this.state.channel.id;
-        const ref = this.props.messagesRef;
-        const filePath = `chat/public/${uuidv4()}.jpeg`;
+        const ref = this.props.getMessagesRef();
+        const filePath = `${this.getPath()}/${uuidv4()}.jpeg`;
 
         this.setState({ uploadState: 'uploading', uploadTask: this.state.storageRef.child(filePath).put(file, metadata) }, () => {
             this.state.uploadTask.on('static_changed', snap => {
