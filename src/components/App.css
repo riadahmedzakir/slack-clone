@@ -4,6 +4,10 @@ html, body, .app {
     padding: 20px;
 }
 
+.menu {
+    padding-bottom: 32px;
+}
+
 .messages {
     height: 69vh;
     max-width: 100% !important;
