@@ -6,6 +6,11 @@ const initialUserState = {
     isLoading: true
 };
 
+const intialCache = {
+    userList: [],
+    isLoading: true
+}
+
 const initialChannelState = {
     currentChannel: null,
     isPrivateChannel: false
@@ -27,6 +32,23 @@ const user_reducer = (state = initialUserState, action) => {
             return {
                 ...state,
                 isLoading: false
+            }
+        case actionTypes.CACHE_USER_DATA:
+            return {
+                ...state,
+
+            }
+        default:
+            return state;
+    }
+}
+
+const user_cache_reducer = (state = intialCache, action) => {
+    switch (action.type) {
+        case actionTypes.CACHE_USER_DATA:
+            return {
+                ...state,
+                userList: action.payload.userList
             }
         default:
             return state;
@@ -71,7 +93,8 @@ const color_reducer = (state = initilaColorsSate, action) => {
 const rootReducer = combineReducers({
     user: user_reducer,
     channel: channel_reducer,
-    colors: color_reducer
+    colors: color_reducer,
+    userCache: user_cache_reducer
 });
 
 export default rootReducer;

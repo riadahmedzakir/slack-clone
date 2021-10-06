@@ -14,7 +14,7 @@ import { BrowserRouter as Router, Switch, Route, withRouter } from "react-router
 import { createStore } from 'redux';
 import { Provider, connect } from 'react-redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { setUser, clearUser } from "./actions";
+import { setUser, clearUser, cacheUserData } from "./actions";
 import rootReducer from "./reducers";
 import Spinner from "./Spinner";
 
@@ -30,7 +30,39 @@ class Root extends React.Component {
         this.props.history.push('/login');
         this.props.clearUser();
       }
-    })
+    });
+
+    const userList = []
+
+    firebase.database().ref('users')
+      .on('child_added', snap => {
+        const data = {
+          userId: snap.key,
+          userData: snap.val()
+        }
+
+        userList.push(data);
+        this.props.cacheUserData(userList);
+      });
+
+    firebase.database().ref('users')
+      .on('child_changed', snap => {
+        const data = {
+          userId: snap.key,
+          userData: snap.val()
+        }
+
+        const updatedData = userList.reduce((acc, user) => {
+          if (user.userId === data.userId) {
+            acc.push(data);
+          } else {
+            acc.push(user);
+          }
+
+          return acc;
+        }, []);
+        this.props.cacheUserData(updatedData);
+      });
   }
 
   render() {
@@ -48,7 +80,7 @@ const mapStatesToProps = (state) => ({
   isLoading: state.user.isLoading
 });
 
-const RootWithAuth = withRouter(connect(mapStatesToProps, { setUser, clearUser })(Root));
+const RootWithAuth = withRouter(connect(mapStatesToProps, { setUser, clearUser, cacheUserData })(Root));
 
 ReactDOM.render(
   <Provider store={store}>

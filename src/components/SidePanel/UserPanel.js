@@ -17,7 +17,8 @@ class UserPanel extends React.Component {
         metadata: {
             contentType: 'image/jpeg'
         },
-        uploadedCroppedImage: ''
+        uploadedCroppedImage: '',
+        isAvatarUploading: false
     };
 
     componentDidMount() {
@@ -89,8 +90,11 @@ class UserPanel extends React.Component {
     }
 
     changeAvatar = () => {
+        this.setState({ isAvatarUploading: true });
+
         this.state.userRef
             .updateProfile({ photoURL: this.state.uploadedCroppedImage }).then(() => {
+                this.setState({ isAvatarUploading: false });
                 this.closeModal();
             }).catch(err => {
                 console.log(err);
@@ -109,7 +113,7 @@ class UserPanel extends React.Component {
 
 
     render() {
-        const { primaryColor, modal, previewImage, croppedImage } = this.state;
+        const { primaryColor, modal, previewImage, croppedImage, isAvatarUploading } = this.state;
 
         return (
             <Grid style={{ background: primaryColor }}>
@@ -138,15 +142,15 @@ class UserPanel extends React.Component {
 
                             <Grid centered stackable columns={2}>
                                 <Grid.Row centered>
-                                    <Grid.Column className="ui center aligned grid">
+                                    <Grid.Column style={{ marginTop: '20px' }} className="ui center aligned grid">
                                         {previewImage && (
                                             <AvatarEditor image={previewImage} width={300} height={300} border={50} ref={node => (this.avatarEditor = node)} />
                                         )}
                                     </Grid.Column>
 
-                                    <Grid.Column>
+                                    <Grid.Column >
                                         {croppedImage && (
-                                            <Image style={{ margin: '4px auto' }} width={300} height={300} src={croppedImage} />
+                                            <Image style={{ margin: '20px auto' }} width={300} height={300} src={croppedImage} />
                                         )}
                                     </Grid.Column>
                                 </Grid.Row>
@@ -154,7 +158,7 @@ class UserPanel extends React.Component {
                         </Modal.Content>
 
                         <Modal.Actions>
-                            {croppedImage && <Button color="green" inverted onClick={this.uploadCroppedImage}>
+                            {croppedImage && <Button color="green" inverted onClick={this.uploadCroppedImage} disabled={isAvatarUploading}>
                                 <Icon name="save" />Change Avatar
                             </Button>}
 

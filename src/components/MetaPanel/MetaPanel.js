@@ -5,8 +5,40 @@ class MetaPanel extends React.Component {
     state = {
         activeIndex: 0,
         channel: this.props.currentChannel,
-        privateChannel: this.props.isPrivateChannel
+        privateChannel: this.props.isPrivateChannel,
+        userList: this.props.userList
     };
+
+    componentDidMount() {
+        const { channel, userList, privateChannel } = this.state;
+
+        if (channel && userList.length && !privateChannel) {
+            const channelCreator = this.getChannelCreator(channel, userList);
+            channel.creatorData = channelCreator.userData;
+
+            this.setState({ channel: channel });
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const { channel, privateChannel } = this.state;
+
+        if (channel && nextProps.userList.length && !privateChannel) {
+            const channelCreator = this.getChannelCreator(channel, nextProps.userList);
+            channel.creatorData = channelCreator.userData;
+
+            this.setState({ channel: channel });
+        }
+    }
+
+
+    getChannelCreator = (channel, userList) => {
+        const { createdBy } = channel;
+        const channelCreator = userList.find(listedUser => {
+            return listedUser.userId === createdBy;
+        })
+        return channelCreator;
+    }
 
     setActiveIndex = (event, titleProps) => {
         const { index } = titleProps;
@@ -72,8 +104,8 @@ class MetaPanel extends React.Component {
 
                     <Accordion.Content active={activeIndex === 2}>
                         <Header as="h3">
-                            <Image circular src={channel && channel.createdBy.avatar} />
-                            {channel && channel.createdBy.name}
+                            <Image circular src={channel && channel.creatorData && channel.creatorData.avatar} />
+                            {channel && channel.creatorData && channel.creatorData.name}
                         </Header>
                     </Accordion.Content>
                 </Accordion>

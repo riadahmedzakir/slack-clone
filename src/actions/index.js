@@ -16,6 +16,16 @@ export const clearUser = () => {
 }
 
 
+export const cacheUserData = (userList) => {
+    return {
+        type: actionTypes.CACHE_USER_DATA,
+        payload: {
+            userList: userList
+        }
+    }
+}
+
+
 export const setCurrentChannel = (channel) => {
     return {
         type: actionTypes.SET_CURRENT_CHANNEL,

@@ -32,7 +32,7 @@ class Channels extends React.Component {
         this.state.channelsRef.on('child_added', snap => {
             loadedChannels.push(snap.val());
 
-            this.setState({ channels: loadedChannels }, () => this.setFirstChannel());
+            this.setState({ channels: loadedChannels });
             this.addNotificationListeners(snap.key);
         });
     }
@@ -101,10 +101,7 @@ class Channels extends React.Component {
             id: key,
             name: channelName,
             details: channelDetails,
-            createdBy: {
-                name: user.displayName,
-                avatar: user.photoURL
-            }
+            createdBy: user.uid
         }
 
         channelsRef.child(key).update(newChannel).then(() => {
@@ -183,8 +180,6 @@ class Channels extends React.Component {
                             CHANNELS
                         </span> {" "}
                         ({channels.length}) <Icon name="add" onClick={this.openModal} style={{ cursor: 'pointer' }} />
-
-
                     </Menu.Item>
 
                     {this.displayChannels(channels)}

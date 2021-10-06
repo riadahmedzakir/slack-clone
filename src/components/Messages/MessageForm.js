@@ -29,9 +29,8 @@ class MessageForm extends React.Component {
             timestamp: firebase.database.ServerValue.TIMESTAMP,
             user: {
                 id: this.state.user.uid,
-                name: this.state.user.displayName,
-                avatar: this.state.user.photoURL
-            },
+                name: this.state.user.displayName
+            }
         }
 
         if (fileUrl !== null) {

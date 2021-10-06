@@ -22,7 +22,8 @@ class Messages extends React.Component {
         numUniqUsers: '',
         searchTerm: '',
         searchLoading: false,
-        searchResults: []
+        searchResults: [],
+        userList: this.props.userList
     };
 
     componentDidMount() {
@@ -31,6 +32,17 @@ class Messages extends React.Component {
         if (channel && user) {
             this.addListeners(channel.id, user.uid);
         }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const { messages } = this.state;
+
+        messages.forEach(message => {
+            const postCreator = this.getPostCreator(message, nextProps.userList);
+            message.user.avatar = postCreator.userData.avatar;
+        });
+
+        this.setState({ messages: messages });
     }
 
     addListeners = (channelId, userId) => {
@@ -43,12 +55,25 @@ class Messages extends React.Component {
         const ref = this.getMessagesRef();
 
         ref.child(channelId).on('child_added', snap => {
-            loadedMessages.push(snap.val());
-            this.setState({ messages: loadedMessages, messageLoading: false })
+            const message = snap.val();
+            const postCreator = this.getPostCreator(snap.val(), this.state.userList);
+            message.user.avatar = postCreator.userData.avatar;
+
+            loadedMessages.push(message);
+
+            this.setState({ messages: loadedMessages, messageLoading: false });
 
             this.countUniqUsers(loadedMessages);
             this.countUserPosts(loadedMessages);
         });
+    }
+
+    getPostCreator = (message, userList) => {
+        const { user } = message;
+        const postCreator = userList.find(listedUser => {
+            return listedUser.userId === user.id;
+        })
+        return postCreator;
     }
 
     addUserStarsListeners = (channelId, userId) => {
@@ -121,7 +146,7 @@ class Messages extends React.Component {
         const channelMessages = [...this.state.messages];
         const regex = new RegExp(this.state.searchTerm, 'gi');
         const searchResults = channelMessages.reduce((acc, message) => {
-            if (message.content && message.content.match(regex) || message.user.name.match(regex)) {
+            if ((message.content && message.content.match(regex)) || message.user.name.match(regex)) {
                 acc.push(message);
             }
 
@@ -148,10 +173,7 @@ class Messages extends React.Component {
                     [this.state.channel.id]: {
                         name: this.state.channel.name,
                         details: this.state.channel.details,
-                        createdBy: {
-                            name: this.state.channel.createdBy.name,
-                            avatar: this.state.channel.createdBy.avatar
-                        }
+                        createdBy: this.state.channel.createdBy
                     }
                 })
         } else {
