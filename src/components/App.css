@@ -162,3 +162,9 @@ html, body, .app {
         opacity: 0;
     }
 }
+
+
+.emoji-mart {
+    position: absolute !important;
+    bottom: 120px;
+}
