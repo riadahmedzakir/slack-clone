@@ -3,6 +3,7 @@ import { Segment, Comment } from 'semantic-ui-react';
 import MessagesHeader from './MessagesHeader';
 import MessageForm from './MessageForm';
 import Message from './Message';
+import Typing from "./Typing";
 
 import firebase from './../../firebase';
 import { connect } from "react-redux";
@@ -11,19 +12,22 @@ import { setUserPosts } from './../../actions'
 class Messages extends React.Component {
     state = {
         messagesRef: firebase.database().ref('messages'),
+        privateMessagesRef: firebase.database().ref('privateMessages'),
+        usersRef: firebase.database().ref('users'),
+        typingRef: firebase.database().ref('typing'),
+        connectedRef: firebase.database().ref('.info/connected'),
         channel: this.props.currentChannel,
         privateChannel: this.props.isPrivateChannel,
-        privateMessagesRef: firebase.database().ref('privateMessages'),
         isChannelStarred: false,
         user: this.props.currentUser,
-        usersRef: firebase.database().ref('users'),
         messages: [],
         messagesLoading: true,
         numUniqUsers: '',
         searchTerm: '',
         searchLoading: false,
         searchResults: [],
-        userList: this.props.userList
+        userList: this.props.userList,
+        typingUsers: []
     };
 
     componentDidMount() {
@@ -48,6 +52,7 @@ class Messages extends React.Component {
     addListeners = (channelId, userId) => {
         this.addMessageListener(channelId);
         this.addUserStarsListeners(channelId, userId);
+        this.addTypingListeners(channelId, userId);
     }
 
     addMessageListener = channelId => {
@@ -65,6 +70,47 @@ class Messages extends React.Component {
 
             this.countUniqUsers(loadedMessages);
             this.countUserPosts(loadedMessages);
+        });
+    }
+
+    addTypingListeners = (channelId, userId) => {
+        let typingUsers = [];
+
+        this.state.typingRef
+            .child(channelId)
+            .on('child_added', snap => {
+                if (snap.key !== userId) {
+                    typingUsers = typingUsers.concat({
+                        id: snap.key,
+                        name: snap.val()
+                    });
+
+                    this.setState({ typingUsers: typingUsers })
+                }
+            });
+
+        this.state.typingRef
+            .child(channelId)
+            .on('child_removed', snap => {
+                const index = typingUsers.findIndex(user => user.id === snap.key);
+                if (index !== -1) {
+                    typingUsers = typingUsers.filter(user => user.id !== snap.key);
+                    this.setState({ typingUsers: typingUsers })
+                }
+            });
+
+        this.state.connectedRef.on('value', snap => {
+            if (snap.val() === true) {
+                this.state.typingRef
+                    .child(channelId)
+                    .child(this.state.user.uid)
+                    .onDisconnect()
+                    .remove(err => {
+                        if (err !== null) {
+                            console.log(err);
+                        }
+                    })
+            }
         });
     }
 
@@ -188,8 +234,16 @@ class Messages extends React.Component {
         }
     }
 
+    displayTypingUsers = (users) => {
+        return users.length > 0 && users.map(user => {
+            return <div key={user.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                <span className="user__typing">{user.name}</span> <Typing />
+            </div>
+        });
+    }
+
     render() {
-        const { messagesRef, channel, user, messages, numUniqUsers, searchTerm, searchResults, searchLoading, privateChannel, isChannelStarred } = this.state;
+        const { messagesRef, channel, user, messages, numUniqUsers, searchTerm, searchResults, searchLoading, privateChannel, isChannelStarred, typingUsers } = this.state;
         return (
             <React.Fragment>
                 <MessagesHeader channelName={this.displayChannelName(channel)} numUniqUsers={numUniqUsers} handleSearchChange={this.handleSearchChange}
@@ -198,6 +252,7 @@ class Messages extends React.Component {
                 <Segment>
                     <Comment.Group className="messages">
                         {searchTerm ? this.displayMessages(searchResults) : this.displayMessages(messages)}
+                        {this.displayTypingUsers(typingUsers)}
                     </Comment.Group>
                 </Segment>
 

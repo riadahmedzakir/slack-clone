@@ -17,11 +17,34 @@ class MessageForm extends React.Component {
         uploadState: '',
         uploadTask: null,
         storageRef: firebase.storage().ref(),
+        typingRef: firebase.database().ref('typing'),
         percentUploaded: 0
     };
 
     handleChange = (event) => {
         this.setState({ [event.target.name]: event.target.value });
+    }
+
+    handleKeyDown = () => {
+        const { message, typingRef, channel, user } = this.state;
+
+        if (message) {
+            typingRef
+                .child(channel.id)
+                .child(user.uid)
+                .set(user.displayName);
+        } else {
+            this.removeTypingRef(channel.id, user.uid);
+        }
+    }
+
+    removeTypingRef(channelId, userId) {
+        const { typingRef } = this.state;
+
+        typingRef
+            .child(channelId)
+            .child(userId)
+            .remove();
     }
 
     createMessage = (fileUrl = null) => {
@@ -48,12 +71,13 @@ class MessageForm extends React.Component {
 
     sendMessage = () => {
         const { getMessagesRef } = this.props;
-        const { message, channel } = this.state;
+        const { message, channel, user } = this.state;
 
         if (message) {
             this.setState({ loading: true });
             getMessagesRef().child(channel.id).push().set(this.createMessage()).then(() => {
                 this.setState({ loading: false, message: '', error: [] });
+                this.removeTypingRef(channel.id, user.uid);
             }).catch(err => {
                 this.setState({ loading: false, errors: this.state.errors.concat(err) });
             });
@@ -119,7 +143,7 @@ class MessageForm extends React.Component {
         return (
             <Segment className="message__form">
                 <Input fluid onChange={this.handleChange} name="message" style={{ marginBottom: '20px' }} label={<Button icon="add" />}
-                    labelPosition="left" placeholder="Write your messages" value={message}
+                    labelPosition="left" placeholder="Write your messages" value={message} onKeyDown={this.handleKeyDown}
                     className={errors.some(error => error.message.toLowerCase().includes('message')) ? 'error' : ''} />
 
                 <Button.Group icon widths="2">
