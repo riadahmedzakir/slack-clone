@@ -14,13 +14,13 @@ const App = ({ currentUser, currentChannel, isPrivateChannel, userPosts, primary
     <SidePanel key={currentUser && currentUser.uid} currentUser={currentUser} primaryColor={primaryColor} />
 
     {currentChannel &&
-      <Grid.Column style={{ marginLeft: 320 }}>
+      <Grid.Column style={{ marginLeft: 340, marginTop: 20 }}>
         <Messages key={currentChannel && currentChannel.id} currentChannel={currentChannel} currentUser={currentUser} isPrivateChannel={isPrivateChannel}
           userList={userList} />
       </Grid.Column>}
 
     {currentChannel &&
-      <Grid.Column width={4}>
+      <Grid.Column style={{ marginTop: 20, marginRight: 20 }} width={4}>
         <MetaPanel key={currentChannel && currentChannel.name} currentChannel={currentChannel} isPrivateChannel={isPrivateChannel} userPosts={userPosts}
           userList={userList} />
       </Grid.Column>}

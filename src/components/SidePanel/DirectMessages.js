@@ -97,7 +97,7 @@ class DirectMessages extends React.Component {
 
     getChannelId = (userId) => {
         const currentUser = this.state.user.uid;
-        return userId < currentUser ? `${userId}/${currentUser}}` : `${currentUser}/${userId}}`;
+        return userId < currentUser ? `${userId}/${currentUser}` : `${currentUser}/${userId}`;
     }
 
     render() {
