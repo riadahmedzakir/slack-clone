@@ -32,9 +32,9 @@ class Root extends React.Component {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.props.setUser(user);
-        this.props.history.push('/');
+        this.props.history.push('slack-clone/');
       } else {
-        this.props.history.push('/login');
+        this.props.history.push('slack-clone/login');
         this.props.clearUser();
       }
     });
@@ -77,9 +77,9 @@ class Root extends React.Component {
       <Router>
         <Suspense fallback={<div>Loading...</div>}>
           <Switch>
-            <Route exact path="slack-clone/" component={App} />
-            <Route path="slack-clone/login" component={Login} />
-            <Route path="slack-clone/register" component={Register} />
+            <Route exact path="/" component={App} />
+            <Route path="/login" component={Login} />
+            <Route path="/register" component={Register} />
           </Switch>
         </Suspense>
       </Router>
