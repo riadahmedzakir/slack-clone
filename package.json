@@ -1,5 +1,6 @@
 {
   "name": "react-slack-clone",
+  "homepage": "https://riadahmedzakir.github.io/slack-clone",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -7,23 +8,39 @@
     "firebase": "^8.10.0",
     "md5": "^2.2.1",
     "moment": "^2.22.2",
-    "react": "^16.4.1",
+    "react": "17.0.2",
     "react-avatar-editor": "^11.0.4",
     "react-color": "^2.14.1",
-    "react-dom": "^16.4.1",
+    "react-dom": "17.0.2",
     "react-redux": "^5.0.7",
-    "react-router-dom": "^4.3.1",
-    "react-scripts": "^1.1.5",
+    "react-router-dom": "5.3.0",
+    "react-scripts": "4.0.3",
     "redux": "^4.0.0",
     "redux-devtools-extension": "^2.13.5",
     "semantic-ui-css": "^2.3.3",
     "semantic-ui-react": "^0.82.1",
     "uuid": "^3.3.2"
   },
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-rename": "^2.0.0"
+  },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && gulp",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
