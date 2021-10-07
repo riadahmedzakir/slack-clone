@@ -23,7 +23,7 @@ import { setUser, clearUser, cacheUserData } from "./actions";
 import rootReducer from "./reducers";
 import Spinner from "./Spinner";
 
-const store = createStore(rootReducer, composeWithDevTools())
+const store = createStore(rootReducer, composeWithDevTools());
 
 class Root extends React.Component {
   componentDidMount() {
@@ -74,15 +74,13 @@ class Root extends React.Component {
 
   render() {
     return this.props.isLoading ? <Spinner /> : (
-      <Router>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Switch>
-            <Route exact path="/" component={App} />
-            <Route path="/login" component={Login} />
-            <Route path="/register" component={Register} />
-          </Switch>
-        </Suspense>
-      </Router>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Switch>
+          <Route exact path="/" component={App} />
+          <Route path="/login" component={Login} />
+          <Route path="/register" component={Register} />
+        </Switch>
+      </Suspense>
     );
   }
 }

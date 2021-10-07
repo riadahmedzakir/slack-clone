@@ -6,3 +6,7 @@ The idea is to create a slack clone. React being used as front end to learn abou
 
 - User login and Registration using firebase.
 - Basic validations and firebase validation for user creation and user login.
+
+## To do
+- Add social login 
+- Make it responsive.
