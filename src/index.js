@@ -32,9 +32,9 @@ class Root extends React.Component {
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.props.setUser(user);
-        this.props.history.push('slack-clone/');
+        this.props.history.push('/');
       } else {
-        this.props.history.push('slack-clone/login');
+        this.props.history.push('/login');
         this.props.clearUser();
       }
     });
