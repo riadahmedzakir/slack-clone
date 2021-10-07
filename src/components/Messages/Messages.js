@@ -4,6 +4,7 @@ import MessagesHeader from './MessagesHeader';
 import MessageForm from './MessageForm';
 import Message from './Message';
 import Typing from "./Typing";
+import Skeleton from "./Skeleton";
 
 import firebase from './../../firebase';
 import { connect } from "react-redux";
@@ -49,6 +50,16 @@ class Messages extends React.Component {
         this.setState({ messages: messages });
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (this.messagesEnd) {
+            this.scrollToBottom();
+        }
+    }
+
+    scrollToBottom = () => {
+        this.messagesEnd.scrollIntoView({ behavior: 'smooth' });
+    }
+
     addListeners = (channelId, userId) => {
         this.addMessageListener(channelId);
         this.addUserStarsListeners(channelId, userId);
@@ -66,7 +77,7 @@ class Messages extends React.Component {
 
             loadedMessages.push(message);
 
-            this.setState({ messages: loadedMessages, messageLoading: false });
+            this.setState({ messages: loadedMessages, messagesLoading: false });
 
             this.countUniqUsers(loadedMessages);
             this.countUserPosts(loadedMessages);
@@ -242,8 +253,19 @@ class Messages extends React.Component {
         });
     }
 
+    displayMessageSkeleton = (loading) => (
+        loading ? (
+            <React.Fragment>
+                {[...Array(10)].map((_, i) => {
+                    return <Skeleton key={i} />
+                })}
+            </React.Fragment>
+        ) : null
+    )
+
     render() {
-        const { messagesRef, channel, user, messages, numUniqUsers, searchTerm, searchResults, searchLoading, privateChannel, isChannelStarred, typingUsers } = this.state;
+        const { messagesRef, channel, user, messages, numUniqUsers, searchTerm, searchResults, searchLoading, privateChannel, isChannelStarred, typingUsers, messagesLoading } = this.state;
+
         return (
             <React.Fragment>
                 <MessagesHeader channelName={this.displayChannelName(channel)} numUniqUsers={numUniqUsers} handleSearchChange={this.handleSearchChange}
@@ -251,8 +273,13 @@ class Messages extends React.Component {
 
                 <Segment>
                     <Comment.Group className="messages">
+                        {this.displayMessageSkeleton(messagesLoading)}
+
                         {searchTerm ? this.displayMessages(searchResults) : this.displayMessages(messages)}
+
                         {this.displayTypingUsers(typingUsers)}
+
+                        <div ref={node => (this.messagesEnd = node)}></div>
                     </Comment.Group>
                 </Segment>
 
