@@ -25,12 +25,19 @@ class MessageForm extends React.Component {
         emojiPicker: false
     };
 
+    componentWillUnmount() {
+        if (this.state.uploadTask !== null) {
+            this.state.uploadTask.cancel();
+            this.setState({ uploadTask: null });
+        }
+    }
+
     handleChange = (event) => {
         this.setState({ [event.target.name]: event.target.value });
     }
 
     handleKeyDown = (event) => {
-        if (event.keyCode === 13) { 
+        if (event.keyCode === 13) {
             this.sendMessage();
         }
         const { message, typingRef, channel, user } = this.state;
@@ -95,7 +102,7 @@ class MessageForm extends React.Component {
 
     getPath = () => {
         if (this.props.isPrivateChannel) {
-            return `chat/private-${this.state.channel.id}`;
+            return `chat/private/${this.state.channel.id}`;
         } else {
             return `chat/public`;
         }
