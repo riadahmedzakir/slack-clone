@@ -39,7 +39,7 @@ class Root extends React.Component {
       }
     });
 
-    const userList = []
+    const userList = [];    
 
     firebase.database().ref('users')
       .on('child_added', snap => {

@@ -4,8 +4,10 @@ import firebase from "../../firebase";
 import md5 from 'md5';
 
 import {
-  Grid, Segment, Button, Header, Message, Icon, Form
+  Grid, Segment, Button, Header, Message, Icon, Form, Divider
 } from 'semantic-ui-react';
+
+import SocialLogin from "./SocialLogin";
 
 class Register extends React.Component {
   state = {
@@ -120,6 +122,9 @@ class Register extends React.Component {
 
               <Button disabled={loading} className={loading ? 'loading' : ''} color="teal" fluid size="large">Submit</Button>
             </Segment>
+
+            <Divider horizontal>Or</Divider>
+            <SocialLogin />
           </Form>
           {errors.length > 0 && (
             <Message error>

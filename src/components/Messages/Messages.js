@@ -96,8 +96,8 @@ class Messages extends React.Component {
 
         ref.child(channelId).on('child_added', snap => {
             const message = snap.val();
-            const postCreator = this.getPostCreator(snap.val(), this.state.userList);
-            message.user.avatar = postCreator.userData.avatar;
+            const postCreator = this.getPostCreator(message, this.state.userList);
+            message.user.avatar = (postCreator) ? postCreator.userData.avatar : '';
 
             loadedMessages.push(message);
 

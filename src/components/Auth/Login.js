@@ -3,8 +3,13 @@ import { Link } from "react-router-dom";
 import firebase from "../../firebase";
 
 import {
-  Grid, Segment, Button, Header, Message, Icon, Form
+  Grid, Segment, Button, Header, Message, Icon, Form, Divider
 } from 'semantic-ui-react';
+
+import { connect } from 'react-redux';
+
+import { cacheUserData } from "./../../actions";
+import SocialLogin from "./SocialLogin";
 
 class Login extends React.Component {
   state = {
@@ -31,7 +36,7 @@ class Login extends React.Component {
         .auth()
         .signInWithEmailAndPassword(this.state.email, this.state.password)
         .then(signedInuser => {
-          console.log(signedInuser);
+          this.cacheUserData();
           this.setState({ loading: false });
         })
         .catch(err => {
@@ -46,12 +51,30 @@ class Login extends React.Component {
     return errors.some(error => error.message.toLowerCase().includes('email')) ? 'error' : '';
   }
 
+  cacheUserData = () => {
+    const userList = [];
+
+    firebase.database().ref('users').once("value", data => {
+      const users = data.val()
+      const userIds = Object.keys(users);
+
+      userIds.forEach(id => {
+        userList.push({
+          userId: id,
+          userData: users[id]
+        })
+      });
+
+      this.props.cacheUserData(userList);
+    });
+  }
+
   // Available colors = "red","orange","yellow","olive","green","teal","blue","violet","purple","pink","brown","grey","black"
   render() {
     const { email, password, errors, loading } = this.state;
 
     return (
-      <Grid textAlign="center" verticalAlign="middle" className="app">
+      <Grid textAlign="center" verticalAlign="middle" className="app" >
         <Grid.Column style={{ maxWidth: 450 }}>
           <Header as="h2" icon color="teal" textAlign="center">
             <Icon name="user secret" color="teal"></Icon>
@@ -65,6 +88,8 @@ class Login extends React.Component {
 
               <Button disabled={loading} className={loading ? 'loading' : ''} color="teal" fluid size="large">Submit</Button>
             </Segment>
+            <Divider horizontal>Or</Divider>
+            <SocialLogin />
           </Form>
           {errors.length > 0 && (
             <Message error>
@@ -80,4 +105,4 @@ class Login extends React.Component {
 
 }
 
-export default Login;
+export default connect(null, { cacheUserData })(Login);
